@@ -7,6 +7,23 @@ CLI_PROFILE=awsbootstrap
 TEMPLATE_FILE=man.yaml
 EC2_INSTANCE_TYPE=t2.micro
 
+# define the S3 bucket name for our CodePipeline
+AWS_ACCOUNT_ID=`aws sts get-caller-identity --profile awsbootstrap \
+  --query "Account" --output text`
+CODEPIPELINE_BUCKET="$STACK_NAME-$REGION-codepipeline-$AWS_ACCOUNT_ID"
+
+# Deploy the setup.yaml file just beofre deploying man.yml
+echo -e "\n\n========= Deploying setup.yaml ==========="
+aws cloudformation deploy \
+	--region $REGION \
+	--profile $CLI_PROFILE \
+	--stack-name $STACK_NAME-setup \
+	--template-file setup.yaml \
+	--no-fail-on-empty-changeset \
+	--capabilities CAPABILITY_NAMED_IAM \
+	--parameter-overrides \
+	CodePipelineBucket=$CODEPIPELINE_BUCKET
+
 # Deploy the cloudformation template 
 echo -e "\n\n================= Deploying man.yml ===================="
 aws cloudformation deploy \
