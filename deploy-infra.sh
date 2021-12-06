@@ -10,6 +10,7 @@ EC2_INSTANCE_TYPE=t2.micro
 # define the S3 bucket name for our CodePipeline
 AWS_ACCOUNT_ID=`aws sts get-caller-identity --profile awsbootstrap \
   --query "Account" --output text`
+# adding our account ID ensures a globally unique s3 bucket across AWS
 CODEPIPELINE_BUCKET="$STACK_NAME-$REGION-codepipeline-$AWS_ACCOUNT_ID"
 
 # Deploy the setup.yaml file just beofre deploying man.yml
